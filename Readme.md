@@ -18,6 +18,6 @@ Then add the dependency in your `pom.xml`:
 <dependency>
     <groupId>com.github.MrAkaki</groupId>
     <artifactId>Utils</artifactId>
-    <version>main-SNAPSHOT</version>
+    <version>0.0.2</version>
 </dependency>
 ```
