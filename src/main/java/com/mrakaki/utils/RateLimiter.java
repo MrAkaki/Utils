@@ -10,6 +10,8 @@ public class RateLimiter {
     private final AtomicInteger requestCount;
     private long lastResetTime;
 
+    private final Object lock = new Object();
+
     public RateLimiter(int maxRequests, long timeWindow, TimeUnit timeUnit) {
         this.maxRequests = maxRequests;
         this.timeWindowMillis = timeUnit.toMillis(timeWindow);
@@ -33,5 +35,20 @@ public class RateLimiter {
         }
 
         return false; // Rate limit exceeded
+    }
+
+    public void waitForAvailability() {
+        while (!allowRequest()) {
+            synchronized (this) {
+                long waitTime = timeWindowMillis - (System.currentTimeMillis() - lastResetTime);
+                if (waitTime > 0) {
+                    try {
+                        this.wait(waitTime);
+                    } catch (InterruptedException e) {
+                        System.out.println("Thread interrupted while waiting for rate limit availability.");
+                    }
+                }
+            }
+        }
     }
 }
